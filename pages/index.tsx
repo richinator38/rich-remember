@@ -1,6 +1,5 @@
 import Head from "next/head";
-import Image from "next/image";
-import styles from "@/styles/Home.module.css";
+import { MongoClient } from "mongodb";
 
 export default function Home() {
   return (
@@ -14,7 +13,34 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={styles.main}></main>
     </>
   );
+}
+
+export async function getStaticProps() {
+  // fetch data from an API
+  const uri =
+    "mongodb+srv://rfranz:<password>@bookmarks.mu319t2.mongodb.net/?retryWrites=true&w=majority";
+  const client = new MongoClient(uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverApi: ServerApiVersion.v1,
+  });
+  client.connect((err: any) => {
+    const collection = client.db("test").collection("devices");
+    // perform actions on the collection object
+    client.close();
+  });
+
+  return {
+    props: {
+      // meetups: meetups.map((meetup) => ({
+      //   title: meetup.title,
+      //   address: meetup.address,
+      //   image: meetup.image,
+      //   id: meetup._id.toString(),
+      // })),
+    },
+    revalidate: 1,
+  };
 }
