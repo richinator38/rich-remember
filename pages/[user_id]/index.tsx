@@ -20,7 +20,7 @@ export default function BookmarksPage(props: { bookmarks: BookmarkModel[] }) {
 
   useEffect(() => {
     bmCtx.onBookmarksRetrieved(bookmarks);
-  }, [bookmarks]);
+  }, [bookmarks, bmCtx]);
 
   useEffect(() => {
     const setUser = async () => {
@@ -49,7 +49,7 @@ export default function BookmarksPage(props: { bookmarks: BookmarkModel[] }) {
     if (hasEmail && !hasId) {
       setUser();
     }
-  }, [email]);
+  }, [email, bmCtx]);
 
   return (
     <>

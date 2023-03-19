@@ -7,7 +7,7 @@ export default function AccessDenied() {
       <p>
         <a
           className="text-lg underline"
-          href="/api/auth/signin"
+          href="javascript:void(0);"
           onClick={(e) => {
             e.preventDefault();
             signIn();
