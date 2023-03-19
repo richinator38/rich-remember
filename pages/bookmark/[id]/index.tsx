@@ -3,9 +3,6 @@ import { useRouter } from "next/router";
 import { useContext, useState } from "react";
 import ky from "ky";
 
-// import { GetServerSideProps } from "next/types";
-// import { MongoClient, ObjectId, ServerApiVersion } from "mongodb";
-
 import UIButton from "@/components/UI/UIButton";
 import UIForm from "@/components/UI/UIForm";
 import BookmarksContext from "@/store/bookmarks-context";
@@ -27,13 +24,13 @@ const BookmarkDetail = () => {
       if (bm) {
         bm.link = linkState || "";
         bm.text = descriptionState || "";
+        bm.user_id = bmCtx.user?.id || "";
         const response = await ky
           .put("/api/bookmarks", {
             json: bm,
             timeout: 20000,
           })
           .json();
-        console.log("response", response);
       }
     }
     router.push(`/`);
@@ -93,41 +90,5 @@ const BookmarkDetail = () => {
     </>
   );
 };
-
-// export const getServerSideProps: GetServerSideProps = async (context: any) => {
-//   const bookmarkId = context.params.id as string;
-//   const uri =
-//     "mongodb+srv://rfranz:IsDkRxOlb5oJbPUY@bookmarks.mu319t2.mongodb.net/?retryWrites=true&w=majority";
-//   const client = new MongoClient(uri, {
-//     serverApi: ServerApiVersion.v1,
-//   });
-//   await client.connect();
-
-//   const bookmark = await client
-//     .db("bookmarks")
-//     .collection("bookmarks")
-//     .findOne({
-//       _id: new ObjectId(bookmarkId),
-//     });
-
-//   client.close();
-
-//   if (bookmark == null) {
-//     return {
-//       props: { bookmark: null },
-//     };
-//   }
-
-//   return {
-//     props: {
-//       bookmark: {
-//         id: bookmark?._id.toString(),
-//         text: bookmark?.text,
-//         link: bookmark?.link,
-//         tags: bookmark?.tags,
-//       },
-//     },
-//   };
-// };
 
 export default BookmarkDetail;

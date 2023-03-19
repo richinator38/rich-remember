@@ -1,6 +1,6 @@
 .header {
   width: 100%;
-  height: 5rem;
+  height: 3rem;
   display: flex;
   align-items: center;
   align-content: center;
@@ -10,7 +10,7 @@
 }
 
 .logo {
-  font-size: 2rem;
+  font-size: 1.5rem;
   color: white;
   font-weight: bold;
 }
@@ -29,12 +29,24 @@
 
 .header a {
   text-decoration: none;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
+  color: white;
+}
+
+.header button {
+  text-decoration: none;
+  font-size: 1.2rem;
   color: white;
 }
 
 .header a:hover,
 .header a:active,
 .header a.active {
+  color: black;
+}
+
+.header button:hover,
+.header button:active,
+.header button.active {
   color: black;
 }

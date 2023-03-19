@@ -29,7 +29,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx"
-  ],
+, "lib/auth.js", "components/Auth/auth-form.jsx"  ],
   "exclude": [
     "node_modules"
   ]
