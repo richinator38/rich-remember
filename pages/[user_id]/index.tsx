@@ -49,7 +49,7 @@ export default function BookmarksPage(props: { bookmarks: BookmarkModel[] }) {
     if (hasEmail && !hasId) {
       setUser();
     }
-  }, [email, bmCtx]);
+  }, [email, bmCtx, session?.user]);
 
   return (
     <>
