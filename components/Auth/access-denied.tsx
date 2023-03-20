@@ -5,16 +5,15 @@ export default function AccessDenied() {
     <>
       <h1 className="text-xl font-bold text-center mb-8">Access Denied</h1>
       <p>
-        <a
+        <button
           className="text-lg underline"
-          href="javascript:void(0);"
           onClick={(e) => {
             e.preventDefault();
             signIn();
           }}
         >
           You must be signed in to view this page
-        </a>
+        </button>
       </p>
     </>
   );

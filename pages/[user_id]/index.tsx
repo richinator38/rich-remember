@@ -1,7 +1,5 @@
-import { MongoClient, ServerApiVersion, WithId } from "mongodb";
-import { useSession } from "next-auth/react";
-import ky from "ky";
-import { useContext, useEffect } from "react";
+import { MongoClient, ServerApiVersion } from "mongodb";
+import { useContext, useEffect, useRef } from "react";
 import Head from "next/head";
 
 import { Constants } from "@/constants/constants";
@@ -14,42 +12,11 @@ import { ParsedUrlQuery } from "querystring";
 
 export default function BookmarksPage(props: { bookmarks: BookmarkModel[] }) {
   const { bookmarks } = props;
-  const { data: session } = useSession();
-  const email = session?.user?.email || "";
-  const bmCtx = useContext(BookmarksContext);
+  const bmCtx = useRef(useContext(BookmarksContext));
 
   useEffect(() => {
-    bmCtx.onBookmarksRetrieved(bookmarks);
-  }, [bookmarks, bmCtx]);
-
-  useEffect(() => {
-    const setUser = async () => {
-      const userFromDbResponse = await ky.get(`/api/user?email=${email}`, {
-        timeout: 20000,
-        throwHttpErrors: false,
-      });
-      console.log("userFromDbResponse", userFromDbResponse);
-
-      if (userFromDbResponse.status === 200) {
-        const userFromDb = await userFromDbResponse.json<UserModel>();
-
-        bmCtx.onSetUser(userFromDb);
-      } else if (userFromDbResponse.status === 404) {
-        const response = await ky.post("/api/user", {
-          json: session?.user,
-          timeout: 20000,
-        });
-
-        bmCtx.onSetUser(await response.json());
-      }
-    };
-
-    const hasEmail = email && email.length > 0;
-    const hasId = bmCtx.user?.id && bmCtx.user?.id.length > 0;
-    if (hasEmail && !hasId) {
-      setUser();
-    }
-  }, [email, bmCtx, session?.user]);
+    bmCtx.current.onBookmarksRetrieved(bookmarks);
+  }, []);
 
   return (
     <>
