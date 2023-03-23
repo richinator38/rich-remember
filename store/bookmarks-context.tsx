@@ -22,9 +22,9 @@ export const BookmarksContextProvider = (props: React.PropsWithChildren) => {
 
   const handleSetUser = (user: UserModel) => {
     setCurrentUser({
-      name: user?.name || "",
-      email: user?.email || Constants.DefaultEmail,
-      id: user?.id,
+      name: user?.name || currentUser?.name || "",
+      email: user?.email || currentUser?.email || Constants.DefaultEmail,
+      id: user?.id || currentUser?.id || "",
     });
   };
 
