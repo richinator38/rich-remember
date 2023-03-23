@@ -23,7 +23,9 @@ export default function Home() {
   }, [userIdFromContext, router]);
 
   useEffect(() => {
+    console.log("setUser outside", userIdFromContext);
     const setUser = async () => {
+      console.log("setUser inside", userIdFromContext);
       const userFromDbResponse = await ky.get(
         `/api/user?email=${emailSession}`,
         {
@@ -31,6 +33,7 @@ export default function Home() {
           throwHttpErrors: false,
         }
       );
+      console.log("userFromDbResponse", userFromDbResponse);
 
       let userSet!: UserModel;
 
