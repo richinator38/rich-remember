@@ -23,9 +23,7 @@ export default function Home() {
   }, [userIdFromContext, router]);
 
   useEffect(() => {
-    console.log("setUser outside", userIdFromContext);
     const setUser = async () => {
-      console.log("setUser inside", userIdFromContext);
       const userFromDbResponse = await ky.get(
         `/api/user?email=${emailSession}`,
         {
@@ -33,15 +31,16 @@ export default function Home() {
           throwHttpErrors: false,
         }
       );
-      console.log("userFromDbResponse", userFromDbResponse);
 
       let userSet!: UserModel;
 
       if (userFromDbResponse.status === 200) {
         userSet = await userFromDbResponse.json<UserModel>();
+        console.log("user from email api", userSet);
 
         bmCtx.current.onSetUser(userSet);
       } else if (userFromDbResponse.status === 404) {
+        console.log("saving new user", nameSession, emailSession);
         const response = await ky.post("/api/user", {
           json: { name: nameSession, email: emailSession },
           timeout: 20000,
