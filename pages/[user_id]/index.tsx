@@ -16,7 +16,7 @@ export default function BookmarksPage(props: { bookmarks: BookmarkModel[] }) {
 
   useEffect(() => {
     bmCtx.current.onBookmarksRetrieved(bookmarks);
-  }, []);
+  }, [bookmarks]);
 
   return (
     <>

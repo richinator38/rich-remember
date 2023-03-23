@@ -16,17 +16,13 @@ export default function Home() {
   const emailSession = session?.user?.email || "";
   const nameSession = session?.user?.name || "";
 
-  console.log("userIdFromContext", userIdFromContext);
-
   useEffect(() => {
     if (userIdFromContext && userIdFromContext.length > 0) {
-      console.log("hello world");
       router.push(`/${userIdFromContext}`);
     }
-  }, [userIdFromContext]);
+  }, [userIdFromContext, router]);
 
   useEffect(() => {
-    console.log("effect 2");
     const setUser = async () => {
       const userFromDbResponse = await ky.get(
         `/api/user?email=${emailSession}`,
@@ -35,7 +31,6 @@ export default function Home() {
           throwHttpErrors: false,
         }
       );
-      console.log("userFromDbResponse", userFromDbResponse);
 
       let userSet!: UserModel;
 
@@ -63,7 +58,7 @@ export default function Home() {
     if (hasEmail && !hasId) {
       setUser();
     }
-  }, [emailSession, nameSession, userIdFromContext]);
+  }, [emailSession, nameSession, userIdFromContext, router]);
 
   if (!session) {
     return (
