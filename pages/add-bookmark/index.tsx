@@ -38,8 +38,6 @@ const BookmarkAdd = () => {
         })
         .json<BookmarkModel>();
       if (response && response.id.length > 0) {
-        // bmCtx.bookmarks.push(response);
-
         const responseReval = await ky
           .get(`/api/revalidate?secret=${process.env.REVALIDATE_SECRET}`)
           .json();
