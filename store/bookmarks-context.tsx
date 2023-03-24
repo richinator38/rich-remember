@@ -21,6 +21,9 @@ export const BookmarksContextProvider = (props: React.PropsWithChildren) => {
   };
 
   const handleSetUser = (user: UserModel) => {
+    // Store this guy so a refresh doesn't lose it.
+    localStorage.setItem(Constants.LocalStorageKeys.User, JSON.stringify(user));
+
     setCurrentUser({
       name: user?.name || currentUser?.name || "",
       email: user?.email || currentUser?.email || Constants.DefaultEmail,

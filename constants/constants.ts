@@ -7,4 +7,8 @@ export namespace Constants {
   }
 
   export const DefaultEmail = "unknown@unknown.com";
+
+  export namespace LocalStorageKeys {
+    export const User = "IREMEMBER_USER";
+  }
 }

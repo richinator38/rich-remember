@@ -11,7 +11,7 @@ import { UserModel } from "@/models";
 export default function Home() {
   const { data: session } = useSession();
   const bmCtx = useRef(useContext(BookmarksContext));
-  const userIdFromContext = bmCtx.current.user?.id || "";
+  let userIdFromContext = bmCtx.current.user?.id || "";
   const router = useRouter();
   const emailSession = session?.user?.email || "";
   const nameSession = session?.user?.name || "";
@@ -36,11 +36,9 @@ export default function Home() {
 
       if (userFromDbResponse.status === 200) {
         userSet = await userFromDbResponse.json<UserModel>();
-        console.log("user from email api", userSet);
 
         bmCtx.current.onSetUser(userSet);
       } else if (userFromDbResponse.status === 404) {
-        console.log("saving new user", nameSession, emailSession);
         const response = await ky.post("/api/user", {
           json: { name: nameSession, email: emailSession },
           timeout: 20000,

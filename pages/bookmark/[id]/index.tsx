@@ -6,12 +6,14 @@ import ky from "ky";
 import UIButton from "@/components/UI/UIButton";
 import UIForm from "@/components/UI/UIForm";
 import BookmarksContext from "@/store/bookmarks-context";
+import { useUserFromStorage } from "@/hooks/useUserFromStorage";
 
 const BookmarkDetail = () => {
   const router = useRouter();
   const { id } = router.query;
   const bmCtx = useContext(BookmarksContext);
   const bookmark = bmCtx.bookmarks.find((b) => b.id === id);
+  const userFromStorage = useUserFromStorage();
 
   const [descriptionState, setDescriptionState] = useState(bookmark?.text);
   const [linkState, setLinkState] = useState(bookmark?.link);
@@ -24,12 +26,18 @@ const BookmarkDetail = () => {
       if (bm) {
         bm.link = linkState || "";
         bm.text = descriptionState || "";
-        bm.user_id = bmCtx.user?.id || "";
+        bm.user_id = userFromStorage.id || "";
         const response = await ky
           .put("/api/bookmarks", {
             json: bm,
             timeout: 20000,
           })
+          .json();
+
+        const responseReval = await ky
+          .get(
+            `/api/revalidate?secret=${process.env.NEXT_PUBLIC_REVALIDATE_SECRET}&userid=${userFromStorage.id}`
+          )
           .json();
       }
     }

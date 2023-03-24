@@ -1,22 +1,22 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import ky from "ky";
 
 import UIButton from "@/components/UI/UIButton";
 import UIForm from "@/components/UI/UIForm";
-import BookmarksContext from "@/store/bookmarks-context";
 import { BookmarkModel } from "@/models/Bookmark";
 import { useSession } from "next-auth/react";
-import { Constants } from "@/constants/constants";
+import { useUserFromStorage } from "@/hooks/useUserFromStorage";
 
 const BookmarkAdd = () => {
   const { data: session } = useSession();
   const router = useRouter();
-  const bmCtx = useContext(BookmarksContext);
+  const userFromStorage = useUserFromStorage();
+  console.log("BookmarkAdd", userFromStorage);
   const bookmark: BookmarkModel = {
     id: "",
-    user_id: bmCtx.user?.id || "",
+    user_id: userFromStorage.id || "",
     link: "",
     text: "",
     tags: [],
@@ -39,7 +39,9 @@ const BookmarkAdd = () => {
         .json<BookmarkModel>();
       if (response && response.id.length > 0) {
         const responseReval = await ky
-          .get(`/api/revalidate?secret=${process.env.REVALIDATE_SECRET}`)
+          .get(
+            `/api/revalidate?secret=${process.env.NEXT_PUBLIC_REVALIDATE_SECRET}&userid=${response.user_id}`
+          )
           .json();
       }
     }
