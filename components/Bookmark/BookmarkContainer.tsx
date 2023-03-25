@@ -1,4 +1,5 @@
 import { BookmarkModel } from "@/models/Bookmark";
+import { uniq } from "lodash-es";
 import React, { useState } from "react";
 import FilterByTags from "../Filter/FilterByTags";
 
@@ -9,14 +10,17 @@ const BookmarkContainer = (props: { bookmarks: BookmarkModel[] }) => {
     props.bookmarks
   );
 
+  const allTags = uniq(props.bookmarks.flatMap((bm) => bm.tags));
+  console.log("allTags", allTags);
+
   const handleFilterChange = (tags: string[]) => {
     const newFilteredBookmarks = props.bookmarks.filter((bm) => {
       if (tags?.length > 0) {
         return (
-          bm.tags?.find(
+          bm.tags?.findIndex(
             (tag) =>
               tags.findIndex((t) => t.toLowerCase() === tag.toLowerCase()) >= 0
-          ) != null
+          ) >= 0
         );
       }
 
@@ -27,14 +31,16 @@ const BookmarkContainer = (props: { bookmarks: BookmarkModel[] }) => {
   };
 
   return (
-    <div className="text-center grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
-      <FilterByTags onFilterChange={handleFilterChange} />
-      {bookmarksToShow?.length > 0 ? (
-        bookmarksToShow.map((bm) => <Bookmark {...bm} key={bm.id} />)
-      ) : (
-        <h1 className="text-xl font-bold">No bookmarks to show.</h1>
-      )}
-    </div>
+    <>
+      <FilterByTags onFilterChange={handleFilterChange} allTags={allTags} />
+      <div className="text-center grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
+        {bookmarksToShow?.length > 0 ? (
+          bookmarksToShow.map((bm) => <Bookmark {...bm} key={bm.id} />)
+        ) : (
+          <h1 className="text-xl font-bold">No bookmarks to show.</h1>
+        )}
+      </div>
+    </>
   );
 };
 
