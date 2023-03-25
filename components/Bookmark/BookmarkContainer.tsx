@@ -12,7 +12,12 @@ const BookmarkContainer = (props: { bookmarks: BookmarkModel[] }) => {
   const handleFilterChange = (tags: string[]) => {
     const newFilteredBookmarks = props.bookmarks.filter((bm) => {
       if (tags?.length > 0) {
-        return bm.tags?.find((tag) => tags.includes(tag)) != null;
+        return (
+          bm.tags?.find(
+            (tag) =>
+              tags.findIndex((t) => t.toLowerCase() === tag.toLowerCase()) >= 0
+          ) != null
+        );
       }
 
       return true;
