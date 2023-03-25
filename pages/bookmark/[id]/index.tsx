@@ -40,7 +40,9 @@ const BookmarkDetail = () => {
 
         const responseReval = await ky
           .get(
-            `/api/revalidate?secret=${process.env.NEXT_PUBLIC_REVALIDATE_SECRET}&userid=${userFromStorage.id}`
+            `/api/revalidate?secret=${
+              process.env.NEXT_PUBLIC_REVALIDATE_SECRET
+            }&userid=${userFromStorage.id}&ts=${new Date().toISOString()}`
           )
           .json();
       }
@@ -78,7 +80,9 @@ const BookmarkDetail = () => {
 
       const responseReval = await ky
         .get(
-          `/api/revalidate?secret=${process.env.NEXT_PUBLIC_REVALIDATE_SECRET}&userid=${userFromStorage.id}`
+          `/api/revalidate?secret=${
+            process.env.NEXT_PUBLIC_REVALIDATE_SECRET
+          }&userid=${userFromStorage.id}&ts=${new Date().toISOString()}`
         )
         .json();
     }

@@ -43,7 +43,9 @@ const BookmarkAdd = () => {
       if (response && response.id.length > 0) {
         const responseReval = await ky
           .get(
-            `/api/revalidate?secret=${process.env.NEXT_PUBLIC_REVALIDATE_SECRET}&userid=${response.user_id}`
+            `/api/revalidate?secret=${
+              process.env.NEXT_PUBLIC_REVALIDATE_SECRET
+            }&userid=${response.user_id}&ts=${new Date().toISOString()}`
           )
           .json();
       }
