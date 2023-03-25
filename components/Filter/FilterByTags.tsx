@@ -66,7 +66,7 @@ const FilterByTags = (props: FilterByTagsProps) => {
             props.allTags.map((tag) => (
               <button
                 key={tag}
-                className="pr-1 w-full"
+                className="pr-1 w-full p-2"
                 onClick={handleTagCloudClick}
               >
                 {tag}
