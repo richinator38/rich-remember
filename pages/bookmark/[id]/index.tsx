@@ -66,6 +66,25 @@ const BookmarkDetail = () => {
     setTagsState(tags);
   };
 
+  const handleDelete = async (e: any) => {
+    e.preventDefault();
+
+    if (bookmark) {
+      const response = await ky
+        .delete(`/api/bookmarks?bookmark_id=${bookmark.id}`, {
+          timeout: 20000,
+        })
+        .json();
+
+      const responseReval = await ky
+        .get(
+          `/api/revalidate?secret=${process.env.NEXT_PUBLIC_REVALIDATE_SECRET}&userid=${userFromStorage.id}`
+        )
+        .json();
+    }
+    router.push(`/`);
+  };
+
   return (
     <>
       {bookmark ? (
@@ -98,8 +117,9 @@ const BookmarkDetail = () => {
               Tags
             </label>
             <TagsInput value={tagsState} onChange={handleTagsChange} />
-            <UIButton onClick={handleSave} text="Save" />
+            <UIButton onClick={handleSave} text="Save" className="mt-6" />
             <UIButton onClick={handleCancel} text="Cancel" />
+            <UIButton onClick={handleDelete} text="Delete" />
           </UIForm>
         </>
       ) : (
