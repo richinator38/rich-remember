@@ -11,7 +11,6 @@ export const useUserFromStorage = () => {
       if (typeof window !== "undefined") {
         const userStr = localStorage.getItem(Constants.LocalStorageKeys.User);
         if (userStr && userStr.length > 0) {
-          console.log("User set from local storage.");
           const user = JSON.parse(userStr);
           bmCtx.onSetUser(user);
         }

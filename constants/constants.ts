@@ -10,5 +10,6 @@ export namespace Constants {
 
   export namespace LocalStorageKeys {
     export const User = "IREMEMBER_USER";
+    export const FilterTags = "FILTER_TAGS";
   }
 }

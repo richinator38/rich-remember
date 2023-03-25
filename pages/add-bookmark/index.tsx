@@ -15,7 +15,6 @@ const BookmarkAdd = () => {
   const { data: session } = useSession();
   const router = useRouter();
   const userFromStorage = useUserFromStorage();
-  console.log("BookmarkAdd", userFromStorage);
   const bookmark: BookmarkModel = {
     id: "",
     user_id: userFromStorage.id || "",
