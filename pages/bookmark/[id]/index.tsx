@@ -2,6 +2,8 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useContext, useState } from "react";
 import ky from "ky";
+import TagsInput from "react-tagsinput";
+import "react-tagsinput/react-tagsinput.css";
 
 import UIButton from "@/components/UI/UIButton";
 import UIForm from "@/components/UI/UIForm";
@@ -17,6 +19,7 @@ const BookmarkDetail = () => {
 
   const [descriptionState, setDescriptionState] = useState(bookmark?.text);
   const [linkState, setLinkState] = useState(bookmark?.link);
+  const [tagsState, setTagsState] = useState(bookmark?.tags || []);
 
   const handleSave = async (e: any) => {
     e.preventDefault();
@@ -27,6 +30,7 @@ const BookmarkDetail = () => {
         bm.link = linkState || "";
         bm.text = descriptionState || "";
         bm.user_id = userFromStorage.id || "";
+        bm.tags = tagsState || [];
         const response = await ky
           .put("/api/bookmarks", {
             json: bm,
@@ -58,6 +62,10 @@ const BookmarkDetail = () => {
     setLinkState(e.target.value);
   };
 
+  const handleTagsChange = (tags: string[]) => {
+    setTagsState(tags);
+  };
+
   return (
     <>
       {bookmark ? (
@@ -86,6 +94,10 @@ const BookmarkDetail = () => {
               onChange={handleLinkChange}
               value={linkState}
             />
+            <label aria-label="Tags" className="mt-4">
+              Tags
+            </label>
+            <TagsInput value={tagsState} onChange={handleTagsChange} />
             <UIButton onClick={handleSave} text="Save" />
             <UIButton onClick={handleCancel} text="Cancel" />
           </UIForm>
