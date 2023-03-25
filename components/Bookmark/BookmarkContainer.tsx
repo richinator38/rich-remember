@@ -10,8 +10,7 @@ const BookmarkContainer = (props: { bookmarks: BookmarkModel[] }) => {
     props.bookmarks
   );
 
-  const allTags = uniq(props.bookmarks.flatMap((bm) => bm.tags));
-  console.log("allTags", allTags);
+  const allTags = uniq(props.bookmarks.flatMap((bm) => bm.tags)).sort();
 
   const handleFilterChange = (tags: string[]) => {
     const newFilteredBookmarks = props.bookmarks.filter((bm) => {

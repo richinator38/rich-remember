@@ -2,7 +2,7 @@ import { Constants } from "@/constants/constants";
 import { useFilterTagsFromStorage } from "@/hooks/useFilterTagsFromStorage";
 import { mdiTagMultipleOutline } from "@mdi/js";
 import Icon from "@mdi/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TagsInput from "react-tagsinput";
 import "react-tagsinput/react-tagsinput.css";
 
@@ -29,6 +29,13 @@ const FilterByTags = (props: FilterByTagsProps) => {
 
     props.onFilterChange(tags);
   };
+
+  useEffect(() => {
+    // If we have a filter from state, make sure to handle it so we see the filtering.
+    if (filterState?.filter?.length > 0) {
+      handleTagsChange(filterState.filter);
+    }
+  }, []);
 
   const handleTagCloudClick = (e: any) => {
     e.preventDefault();
@@ -61,7 +68,7 @@ const FilterByTags = (props: FilterByTagsProps) => {
         <Icon path={mdiTagMultipleOutline} title="Show All Tags" size={1} />
       </button>
       {showAllTags && props.allTags && props.allTags.length > 0 && (
-        <p className="absolute top-28 z-50 bg-blue-300 text-white w-52 h-auto scroll-auto">
+        <p className="absolute top-28 z-50 bg-blue-300 text-white w-52 h-2/3 overflow-auto scroll-auto">
           {props.allTags &&
             props.allTags.map((tag) => (
               <button
