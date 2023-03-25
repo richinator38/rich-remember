@@ -26,6 +26,8 @@ const FilterByTags = (props: FilterByTagsProps) => {
     props.onFilterChange(tags);
   };
 
+  const handleValidate = (value: string) => value?.length > 0;
+
   return (
     <TagsInput
       value={currentTags.filter}
@@ -34,6 +36,9 @@ const FilterByTags = (props: FilterByTagsProps) => {
         className: "react-tagsinput-input",
         placeholder: "Filter tags",
       }}
+      onlyUnique={true}
+      addOnBlur={true}
+      validate={handleValidate}
     />
   );
 };
