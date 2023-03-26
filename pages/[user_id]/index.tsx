@@ -8,9 +8,10 @@ import { GetStaticProps } from "next";
 import { ParsedUrlQuery } from "querystring";
 import { getAllUsers } from "@/lib/users-lib";
 import { getAllBookmarksForUser } from "@/lib/bookmarks-lib";
+import { sortBy } from "lodash-es";
 
 export default function BookmarksPage(props: { bookmarks: BookmarkModel[] }) {
-  const { bookmarks } = props;
+  let { bookmarks } = props;
   const bmCtx = useRef(useContext(BookmarksContext));
 
   useEffect(() => {
@@ -54,12 +55,14 @@ export const getStaticProps: GetStaticProps = async (context) => {
   const { user_id } = context.params as IParams;
 
   // fetch data from an API
-  const bookmarks = await getAllBookmarksForUser(user_id);
+  let bookmarks = await getAllBookmarksForUser(user_id);
+  bookmarks = sortBy(bookmarks, function (b) {
+    return b.text.toLowerCase();
+  });
 
   return {
     props: {
       bookmarks,
     },
-    revalidate: 1,
   };
 };

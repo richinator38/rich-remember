@@ -10,7 +10,13 @@ const BookmarkContainer = (props: { bookmarks: BookmarkModel[] }) => {
     props.bookmarks
   );
 
-  const allTags = uniq(props.bookmarks.flatMap((bm) => bm.tags)).sort();
+  const allTags = uniq(
+    props.bookmarks.flatMap((bm) => {
+      const lowercaseTags: string[] = [];
+      bm.tags.forEach((t) => lowercaseTags.push(t.toLowerCase()));
+      return lowercaseTags;
+    })
+  ).sort();
 
   const handleFilterChange = (tags: string[]) => {
     const newFilteredBookmarks = props.bookmarks.filter((bm) => {

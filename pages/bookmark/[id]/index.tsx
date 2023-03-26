@@ -9,6 +9,7 @@ import UIButton from "@/components/UI/UIButton";
 import UIForm from "@/components/UI/UIForm";
 import BookmarksContext from "@/store/bookmarks-context";
 import { useUserFromStorage } from "@/hooks/useUserFromStorage";
+import { isEmpty } from "lodash-es";
 
 const BookmarkDetail = () => {
   const router = useRouter();
@@ -17,12 +18,22 @@ const BookmarkDetail = () => {
   const bookmark = bmCtx.bookmarks.find((b) => b.id === id);
   const userFromStorage = useUserFromStorage();
 
-  const [descriptionState, setDescriptionState] = useState(bookmark?.text);
-  const [linkState, setLinkState] = useState(bookmark?.link);
+  const [descriptionState, setDescriptionState] = useState(
+    bookmark?.text || ""
+  );
+  const [linkState, setLinkState] = useState(bookmark?.link || "");
   const [tagsState, setTagsState] = useState(bookmark?.tags || []);
+  const [formInputsValidity, setFormInputsValidity] = useState({
+    text: true,
+    link: true,
+  });
 
   const handleSave = async (e: any) => {
     e.preventDefault();
+
+    if (!updateFieldsValidity(descriptionState, linkState)) {
+      return;
+    }
 
     if (bookmark) {
       const bm = bmCtx.bookmarks.find((b) => b.id === id);
@@ -56,12 +67,36 @@ const BookmarkDetail = () => {
     router.push(`/`);
   };
 
+  const updateFieldsValidity = (text: string, link: string): boolean => {
+    const textIsValid = !isEmpty(text);
+    const linkIsValid = !isEmpty(link);
+
+    const validityObj = {
+      text: formInputsValidity.text,
+      link: formInputsValidity.link,
+    };
+
+    validityObj.text = textIsValid;
+    validityObj.link = linkIsValid;
+
+    setFormInputsValidity(validityObj);
+
+    const formIsValid = textIsValid && linkIsValid;
+    return formIsValid;
+  };
+
   const handleDescChange = (e: any) => {
-    setDescriptionState(e.target.value);
+    const descValue = e.target.value;
+    setDescriptionState(descValue);
+
+    updateFieldsValidity(descValue, linkState);
   };
 
   const handleLinkChange = (e: any) => {
-    setLinkState(e.target.value);
+    const linkValue = e.target.value;
+    setLinkState(linkValue);
+
+    updateFieldsValidity(descriptionState, linkValue);
   };
 
   const handleTagsChange = (tags: string[]) => {
@@ -107,6 +142,9 @@ const BookmarkDetail = () => {
               onChange={handleDescChange}
               value={descriptionState}
             />
+            {!formInputsValidity.text && (
+              <p className="text-red-600 font-bold">Description is required</p>
+            )}
             <label htmlFor="link" aria-label="Link" className="mt-4">
               Link
             </label>
@@ -117,6 +155,9 @@ const BookmarkDetail = () => {
               onChange={handleLinkChange}
               value={linkState}
             />
+            {!formInputsValidity.link && (
+              <p className="text-red-600 font-bold">Link is required</p>
+            )}
             <label aria-label="Tags" className="mt-4">
               Tags
             </label>
