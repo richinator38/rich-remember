@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import ky from "ky";
 import TagsInput from "react-tagsinput";
 import "react-tagsinput/react-tagsinput.css";
@@ -11,10 +11,13 @@ import { BookmarkModel } from "@/models/Bookmark";
 import { useSession } from "next-auth/react";
 import { useUserFromStorage } from "@/hooks/useUserFromStorage";
 import { isEmpty } from "lodash-es";
+import { UITagEntry } from "@/components/UI/UITagEntry";
+import BookmarksContext from "@/store/bookmarks-context";
 
 const BookmarkAdd = () => {
   const { data: session } = useSession();
   const router = useRouter();
+  const bmCtx = useContext(BookmarksContext);
   const userFromStorage = useUserFromStorage();
   const bookmark: BookmarkModel = {
     id: "",
@@ -139,7 +142,11 @@ const BookmarkAdd = () => {
         <label aria-label="Tags" className="mt-4">
           Tags
         </label>
-        <TagsInput value={tagsState} onChange={handleTagsChange} />
+        <UITagEntry
+          onTagsChanged={handleTagsChange}
+          allTags={bmCtx.allTags}
+          initialTags={tagsState}
+        />
         <UIButton onClick={handleSave} text="Save" />
         <UIButton onClick={handleCancel} text="Cancel" />
       </UIForm>

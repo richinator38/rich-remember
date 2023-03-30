@@ -2,14 +2,13 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useContext, useState } from "react";
 import ky from "ky";
-import TagsInput from "react-tagsinput";
-import "react-tagsinput/react-tagsinput.css";
 
 import UIButton from "@/components/UI/UIButton";
 import UIForm from "@/components/UI/UIForm";
 import BookmarksContext from "@/store/bookmarks-context";
 import { useUserFromStorage } from "@/hooks/useUserFromStorage";
 import { isEmpty } from "lodash-es";
+import { UITagEntry } from "@/components/UI/UITagEntry";
 
 const BookmarkDetail = () => {
   const router = useRouter();
@@ -161,7 +160,11 @@ const BookmarkDetail = () => {
             <label aria-label="Tags" className="mt-4">
               Tags
             </label>
-            <TagsInput value={tagsState} onChange={handleTagsChange} />
+            <UITagEntry
+              onTagsChanged={handleTagsChange}
+              allTags={bmCtx.allTags}
+              initialTags={tagsState}
+            />
             <UIButton onClick={handleSave} text="Save" className="mt-6" />
             <UIButton onClick={handleCancel} text="Cancel" />
             <UIButton onClick={handleDelete} text="Delete" />

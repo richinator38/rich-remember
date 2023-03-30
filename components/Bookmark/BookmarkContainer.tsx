@@ -1,22 +1,28 @@
 import { BookmarkModel } from "@/models/Bookmark";
+import BookmarksContext from "@/store/bookmarks-context";
 import { uniq } from "lodash-es";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import FilterByTags from "../Filter/FilterByTags";
 
 import Bookmark from "./Bookmark";
 
 const BookmarkContainer = (props: { bookmarks: BookmarkModel[] }) => {
-  const [bookmarksToShow, setBookmarksToShow] = useState<BookmarkModel[]>(
-    props.bookmarks
-  );
+  const { bookmarks } = props;
+  const [bookmarksToShow, setBookmarksToShow] =
+    useState<BookmarkModel[]>(bookmarks);
+  const bmCtx = useContext(BookmarksContext);
 
-  const allTags = uniq(
-    props.bookmarks.flatMap((bm) => {
-      const lowercaseTags: string[] = [];
-      bm.tags.forEach((t) => lowercaseTags.push(t.toLowerCase()));
-      return lowercaseTags;
-    })
-  ).sort();
+  useEffect(() => {
+    const allTags = uniq(
+      bookmarks.flatMap((bm) => {
+        const lowercaseTags: string[] = [];
+        bm.tags.forEach((t) => lowercaseTags.push(t.toLowerCase()));
+        return lowercaseTags;
+      })
+    ).sort();
+
+    bmCtx.onSetAllTags(allTags);
+  }, [bookmarks]);
 
   const handleFilterChange = (tags: string[]) => {
     const newFilteredBookmarks = props.bookmarks.filter((bm) => {
@@ -37,7 +43,10 @@ const BookmarkContainer = (props: { bookmarks: BookmarkModel[] }) => {
 
   return (
     <>
-      <FilterByTags onFilterChange={handleFilterChange} allTags={allTags} />
+      <FilterByTags
+        onTagsChanged={handleFilterChange}
+        allTags={bmCtx.allTags}
+      />
       <div className="text-center grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
         {bookmarksToShow?.length > 0 ? (
           bookmarksToShow.map((bm) => <Bookmark {...bm} key={bm.id} />)

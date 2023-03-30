@@ -1,4 +1,4 @@
-import { FilterState } from "@/components/Filter/FilterByTags";
+import { FilterState } from "@/components/UI/UITagEntry";
 import { Constants } from "@/constants/constants";
 
 export const useFilterTagsFromStorage = () => {
