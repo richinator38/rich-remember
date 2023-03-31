@@ -122,6 +122,7 @@ const BookmarkAdd = () => {
           id="description"
           onChange={handleDescChange}
           value={descriptionState}
+          maxLength={500}
         />
         {!formInputsValidity.text && (
           <p className="text-red-600 font-bold">Description is required</p>
@@ -135,6 +136,7 @@ const BookmarkAdd = () => {
           id="link"
           onChange={handleLinkChange}
           value={linkState}
+          maxLength={2000}
         />
         {!formInputsValidity.link && (
           <p className="text-red-600 font-bold">Link is required</p>
