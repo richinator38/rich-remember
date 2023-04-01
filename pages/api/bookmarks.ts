@@ -4,6 +4,7 @@ import { MongoClient, ObjectId, ServerApiVersion } from "mongodb";
 
 import { BookmarkModel } from "@/models/Bookmark";
 import { Constants } from "@/constants/constants";
+import { sortBy } from "lodash-es";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
   if (req.method === "PUT") {
@@ -79,7 +80,38 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
     const statusText = statusCode === 200 ? "DELETED" : "ERROR";
     res.status(statusCode).json({ status: statusText });
   } else {
-    res.status(500).json({ status: "Error" });
+    const userid = req.query.user_id as string;
+    const client = new MongoClient(process.env.MONGO_URI || "", {
+      serverApi: ServerApiVersion.v1,
+    });
+    await client.connect();
+
+    const bookmarks = await client
+      .db(Constants.DatabaseName)
+      .collection<BookmarkModel>(Constants.CollectionNames.bookmarks)
+      .find({ user_id: userid })
+      .toArray();
+
+    client.close();
+
+    const bookmarkArray: BookmarkModel[] = bookmarks.map((bm) => {
+      return {
+        id: bm._id.toString(),
+        link: bm.link,
+        text: bm.text,
+        tags: bm.tags,
+        user_id: bm.user_id,
+      };
+    });
+    const bookmarksSorted = sortBy(bookmarkArray, function (b) {
+      return b.text.toLowerCase();
+    });
+
+    const statusCode = bookmarks != null ? 200 : 500;
+    const statusText = statusCode === 200 ? "OK" : "ERROR";
+    res
+      .status(statusCode)
+      .json({ status: statusText, bookmarks: bookmarksSorted });
   }
 };
 

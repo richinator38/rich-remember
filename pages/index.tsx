@@ -7,6 +7,7 @@ import ky from "ky";
 import AccessDenied from "@/components/Auth/access-denied";
 import BookmarksContext from "@/store/bookmarks-context";
 import { UserModel } from "@/models";
+import BookmarkContainer from "@/components/Bookmark/BookmarkContainer";
 
 export default function Home() {
   const { data: session } = useSession();
@@ -15,12 +16,6 @@ export default function Home() {
   const router = useRouter();
   const emailSession = session?.user?.email || "";
   const nameSession = session?.user?.name || "";
-
-  useEffect(() => {
-    if (userIdFromContext && userIdFromContext.length > 0) {
-      router.push(`/${userIdFromContext}`);
-    }
-  }, [userIdFromContext, router]);
 
   useEffect(() => {
     const setUser = async () => {
@@ -47,10 +42,6 @@ export default function Home() {
         userSet = await response.json();
         bmCtx.current.onSetUser(userSet);
       }
-
-      if (userSet) {
-        router.push(`/${userSet.id?.toString()}`);
-      }
     };
 
     const hasEmail = emailSession && emailSession.length > 0;
@@ -60,18 +51,29 @@ export default function Home() {
     }
   }, [emailSession, nameSession, userIdFromContext, router]);
 
-  if (!session) {
+  const header = (
+    <Head>
+      <title>iRemember</title>
+      <meta
+        name="description"
+        content="Bookmark app for those with less than ideal memories"
+      />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <link rel="icon" href="/favicon.ico" />
+    </Head>
+  );
+
+  if (session) {
     return (
       <>
-        <Head>
-          <title>iRemember</title>
-          <meta
-            name="description"
-            content="Bookmark app for those with less than ideal memories"
-          />
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <link rel="icon" href="/favicon.ico" />
-        </Head>
+        {header}
+        <BookmarkContainer />
+      </>
+    );
+  } else {
+    return (
+      <>
+        {header}
         <AccessDenied />
       </>
     );

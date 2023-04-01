@@ -1,20 +1,52 @@
+import React, { useContext, useEffect, useState } from "react";
+import { uniq } from "lodash-es";
+import ky from "ky";
+
+import FilterByTags from "../Filter/FilterByTags";
+import Bookmark from "./Bookmark";
 import { BookmarkModel } from "@/models/Bookmark";
 import BookmarksContext from "@/store/bookmarks-context";
-import { uniq } from "lodash-es";
-import React, { useContext, useEffect, useState } from "react";
-import FilterByTags from "../Filter/FilterByTags";
+import { useUserFromStorage } from "@/hooks/useUserFromStorage";
+import { useFilterTagsFromStorage } from "@/hooks/useFilterTagsFromStorage";
 
-import Bookmark from "./Bookmark";
-
-const BookmarkContainer = (props: { bookmarks: BookmarkModel[] }) => {
-  const { bookmarks } = props;
-  const [bookmarksToShow, setBookmarksToShow] =
-    useState<BookmarkModel[]>(bookmarks);
+const BookmarkContainer = () => {
+  const [allBookmarks, setAllBookmarks] = useState<BookmarkModel[]>([]);
+  const [bookmarksToShow, setBookmarksToShow] = useState<BookmarkModel[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const bmCtx = useContext(BookmarksContext);
+  const { id: user_id } = useUserFromStorage();
+  const { filter: tagsToFilterBy } = useFilterTagsFromStorage();
+
+  useEffect(() => {
+    const getBookmarks = async () => {
+      setIsLoading(true);
+      const bookmarksFromDbResponse = await ky.get(
+        `/api/bookmarks?user_id=${user_id || ""}`,
+        {
+          timeout: 20000,
+          throwHttpErrors: false,
+        }
+      );
+
+      const bookmarks = await bookmarksFromDbResponse.json<{
+        status: string;
+        bookmarks: BookmarkModel[];
+      }>();
+      setIsLoading(false);
+      return bookmarks;
+    };
+
+    if (user_id && user_id.length > 0) {
+      getBookmarks().then((value) => {
+        setAllBookmarks(value.bookmarks);
+        bmCtx.onBookmarksRetrieved(value.bookmarks);
+      });
+    }
+  }, [user_id]);
 
   useEffect(() => {
     const allTags = uniq(
-      bookmarks.flatMap((bm) => {
+      allBookmarks.flatMap((bm) => {
         const lowercaseTags: string[] = [];
         bm.tags.forEach((t) => lowercaseTags.push(t.toLowerCase()));
         return lowercaseTags;
@@ -22,10 +54,11 @@ const BookmarkContainer = (props: { bookmarks: BookmarkModel[] }) => {
     ).sort();
 
     bmCtx.onSetAllTags(allTags);
-  }, [bookmarks]);
+    handleFilterChange(tagsToFilterBy);
+  }, [allBookmarks]);
 
   const handleFilterChange = (tags: string[]) => {
-    const newFilteredBookmarks = props.bookmarks.filter((bm) => {
+    const newFilteredBookmarks = allBookmarks.filter((bm) => {
       if (tags?.length > 0) {
         return (
           bm.tags?.findIndex(
@@ -51,7 +84,13 @@ const BookmarkContainer = (props: { bookmarks: BookmarkModel[] }) => {
         {bookmarksToShow?.length > 0 ? (
           bookmarksToShow.map((bm) => <Bookmark {...bm} key={bm.id} />)
         ) : (
-          <h1 className="text-xl font-bold">No bookmarks to show.</h1>
+          <h1 className="text-xl font-bold">
+            {isLoading ? (
+              <p>Loading Bookmarks...</p>
+            ) : (
+              <p>No bookmarks to show.</p>
+            )}
+          </h1>
         )}
       </div>
     </>
