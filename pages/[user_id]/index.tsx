@@ -4,7 +4,7 @@ import Head from "next/head";
 import { BookmarkModel } from "@/models/Bookmark";
 import BookmarkContainer from "@/components/Bookmark/BookmarkContainer";
 import BookmarksContext from "@/store/bookmarks-context";
-import { GetStaticProps } from "next";
+import { GetServerSideProps, GetStaticProps } from "next";
 import { ParsedUrlQuery } from "querystring";
 import { getAllUsers } from "@/lib/users-lib";
 import { getAllBookmarksForUser } from "@/lib/bookmarks-lib";
@@ -38,20 +38,7 @@ interface IParams extends ParsedUrlQuery {
   user_id: string;
 }
 
-export async function getStaticPaths() {
-  const users = await getAllUsers();
-
-  const userArray = users.map((u) => {
-    return { params: { user_id: u.id } };
-  });
-
-  return {
-    paths: userArray,
-    fallback: false,
-  };
-}
-
-export const getStaticProps: GetStaticProps = async (context) => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
   const { user_id } = context.params as IParams;
 
   // fetch data from an API

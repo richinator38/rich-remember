@@ -52,15 +52,6 @@ const BookmarkAdd = () => {
           timeout: 20000,
         })
         .json<BookmarkModel>();
-      if (response && response.id.length > 0) {
-        const responseReval = await ky
-          .get(
-            `/api/revalidate?secret=${
-              process.env.NEXT_PUBLIC_REVALIDATE_SECRET
-            }&userid=${response.user_id}&ts=${new Date().toISOString()}`
-          )
-          .json();
-      }
     }
     router.push(`/`);
   };
