@@ -47,14 +47,6 @@ const BookmarkDetail = () => {
             timeout: 20000,
           })
           .json();
-
-        const responseReval = await ky
-          .get(
-            `/api/revalidate?secret=${
-              process.env.NEXT_PUBLIC_REVALIDATE_SECRET
-            }&userid=${userFromStorage.id}&ts=${new Date().toISOString()}`
-          )
-          .json();
       }
     }
     router.push(`/`);
@@ -110,14 +102,6 @@ const BookmarkDetail = () => {
         .delete(`/api/bookmarks?bookmark_id=${bookmark.id}`, {
           timeout: 20000,
         })
-        .json();
-
-      const responseReval = await ky
-        .get(
-          `/api/revalidate?secret=${
-            process.env.NEXT_PUBLIC_REVALIDATE_SECRET
-          }&userid=${userFromStorage.id}&ts=${new Date().toISOString()}`
-        )
         .json();
     }
     router.push(`/`);
