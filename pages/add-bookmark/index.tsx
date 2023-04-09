@@ -52,7 +52,9 @@ const BookmarkAdd = () => {
           timeout: 20000,
         })
         .json<BookmarkModel>();
+      bmCtx.onSetShouldRetrieveBookmarks(true);
     }
+
     router.push(`/`);
   };
 
@@ -135,11 +137,7 @@ const BookmarkAdd = () => {
         <label aria-label="Tags" className="mt-4">
           Tags
         </label>
-        <UITagEntry
-          onTagsChanged={handleTagsChange}
-          allTags={bmCtx.allTags}
-          initialTags={tagsState}
-        />
+        <UITagEntry onTagsChanged={handleTagsChange} initialTags={tagsState} />
         <UIButton onClick={handleSave} text="Save" />
         <UIButton onClick={handleCancel} text="Cancel" />
       </UIForm>

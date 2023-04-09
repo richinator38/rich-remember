@@ -27,7 +27,6 @@ const FilterByTags = (props: UITagEntryProps) => {
   return (
     <UITagEntry
       onTagsChanged={handleTagsChange}
-      allTags={props.allTags}
       initialTags={filterState.filter}
     />
   );

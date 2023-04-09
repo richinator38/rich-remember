@@ -1,15 +1,16 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import TagsInput from "react-tagsinput";
 import "react-tagsinput/react-tagsinput.css";
 import { mdiTagMultipleOutline } from "@mdi/js";
 import Icon from "@mdi/react";
+import BookmarksContext from "@/store/bookmarks-context";
+import { uniq } from "lodash-es";
 
 export interface FilterState {
   filter: string[];
 }
 
 export interface UITagEntryProps {
-  allTags?: string[];
   initialTags?: string[];
   onTagsChanged: (tags: string[]) => void;
 }
@@ -19,6 +20,9 @@ export const UITagEntry = (props: UITagEntryProps) => {
   const [currentTags, setCurrentTags] = useState<FilterState>({
     filter: props.initialTags || [],
   });
+  const [allTags, setAllTags] = useState<string[]>([]);
+  const bmCtx = useContext(BookmarksContext);
+  const { bookmarks: allBookmarks } = bmCtx;
 
   const handleTagCloudClick = (e: any) => {
     e.preventDefault();
@@ -29,6 +33,19 @@ export const UITagEntry = (props: UITagEntryProps) => {
 
     setShowAllTags(false);
   };
+
+  useEffect(() => {
+    const allTagsNew = uniq(
+      allBookmarks.flatMap((bm) => {
+        const lowercaseTags: string[] = [];
+        bm.tags.forEach((t) => lowercaseTags.push(t.toLowerCase()));
+        return lowercaseTags;
+      })
+    ).sort();
+
+    setAllTags(allTagsNew);
+    tagsChanged(currentTags.filter);
+  }, [allBookmarks]);
 
   const handleTagsChange = (tags: string[]) => {
     tagsChanged(tags);
@@ -60,10 +77,10 @@ export const UITagEntry = (props: UITagEntryProps) => {
       <button className="flex-none w-7" onClick={handleShowAllTags}>
         <Icon path={mdiTagMultipleOutline} title="Show All Tags" size={1} />
       </button>
-      {showAllTags && props.allTags && props.allTags.length > 0 && (
+      {showAllTags && allTags && allTags.length > 0 && (
         <p className="absolute top-28 z-50 bg-blue-300 text-white w-52 h-2/3 overflow-auto scroll-auto">
-          {props.allTags &&
-            props.allTags.map((tag) => (
+          {allTags &&
+            allTags.map((tag) => (
               <button
                 key={tag}
                 className="pr-1 w-full p-2"

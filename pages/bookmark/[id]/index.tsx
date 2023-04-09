@@ -47,8 +47,10 @@ const BookmarkDetail = () => {
             timeout: 20000,
           })
           .json();
+        bmCtx.onSetShouldRetrieveBookmarks(true);
       }
     }
+
     router.push(`/`);
   };
 
@@ -103,7 +105,9 @@ const BookmarkDetail = () => {
           timeout: 20000,
         })
         .json();
+      bmCtx.onSetShouldRetrieveBookmarks(true);
     }
+
     router.push(`/`);
   };
 
@@ -148,7 +152,6 @@ const BookmarkDetail = () => {
             </label>
             <UITagEntry
               onTagsChanged={handleTagsChange}
-              allTags={bmCtx.allTags}
               initialTags={tagsState}
             />
             <UIButton onClick={handleSave} text="Save" className="mt-6" />

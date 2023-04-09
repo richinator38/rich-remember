@@ -4,8 +4,8 @@ import { UserModel } from "./User";
 export interface StoreModel {
   user: UserModel;
   bookmarks: BookmarkModel[];
-  allTags: string[];
+  shouldRetrieveBookmarks: boolean;
   onBookmarksRetrieved: (bookmarks: BookmarkModel[]) => void;
   onSetUser: (user: UserModel) => void;
-  onSetAllTags: (tags: string[]) => void;
+  onSetShouldRetrieveBookmarks: (value: boolean) => void;
 }

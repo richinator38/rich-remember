@@ -8,16 +8,17 @@ import { UserModel } from "@/models";
 const BookmarksContext = React.createContext<StoreModel>({
   user: { id: "", email: "", name: "" },
   bookmarks: [],
-  allTags: [],
+  shouldRetrieveBookmarks: true,
   onBookmarksRetrieved: (bookmarks: BookmarkModel[]) => {},
   onSetUser: (user: UserModel) => {},
-  onSetAllTags: (tags: string[]) => {},
+  onSetShouldRetrieveBookmarks: (value: boolean) => {},
 });
 
 export const BookmarksContextProvider = (props: React.PropsWithChildren) => {
   const [bookmarks, setBookmarks] = useState<BookmarkModel[]>([]);
   const [currentUser, setCurrentUser] = useState<UserModel | null>(null);
-  const [allTags, setAllTags] = useState<string[]>([]);
+  const [shouldRetrieveBookmarks, setShouldRetrieveBookmarks] =
+    useState<boolean>(true);
 
   const handleBookmarksRetrieved = (bookmarks: BookmarkModel[]) => {
     setBookmarks(bookmarks);
@@ -34,8 +35,8 @@ export const BookmarksContextProvider = (props: React.PropsWithChildren) => {
     });
   };
 
-  const handleSetAllTags = (tags: string[]) => {
-    setAllTags(tags);
+  const handleSetShouldRetrieveBookmarks = (value: boolean) => {
+    setShouldRetrieveBookmarks(value);
   };
 
   return (
@@ -47,10 +48,10 @@ export const BookmarksContextProvider = (props: React.PropsWithChildren) => {
           id: currentUser?.id || "",
         },
         bookmarks: bookmarks,
-        allTags: allTags,
+        shouldRetrieveBookmarks: shouldRetrieveBookmarks,
         onBookmarksRetrieved: handleBookmarksRetrieved,
         onSetUser: handleSetUser,
-        onSetAllTags: handleSetAllTags,
+        onSetShouldRetrieveBookmarks: handleSetShouldRetrieveBookmarks,
       }}
     >
       {props.children}

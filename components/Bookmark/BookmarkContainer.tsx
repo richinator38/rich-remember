@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
-import { uniq } from "lodash-es";
 import ky from "ky";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import FilterByTags from "../Filter/FilterByTags";
 import Bookmark from "./Bookmark";
@@ -15,11 +16,13 @@ const BookmarkContainer = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const bmCtx = useContext(BookmarksContext);
   const { id: user_id } = useUserFromStorage();
-  const { filter: tagsToFilterBy } = useFilterTagsFromStorage();
+  const { filter: currentTags } = useFilterTagsFromStorage();
+  const { shouldRetrieveBookmarks } = bmCtx;
 
   useEffect(() => {
     const getBookmarks = async () => {
       setIsLoading(true);
+      toast("Loading Bookmarks...");
       const bookmarksFromDbResponse = await ky.get(
         `/api/bookmarks?user_id=${user_id || ""}`,
         {
@@ -32,29 +35,26 @@ const BookmarkContainer = () => {
         status: string;
         bookmarks: BookmarkModel[];
       }>();
+      toast.dismiss();
       setIsLoading(false);
       return bookmarks;
     };
 
-    if (user_id && user_id.length > 0) {
+    if (shouldRetrieveBookmarks && user_id && user_id.length > 0) {
+      bmCtx.onSetShouldRetrieveBookmarks(false);
       getBookmarks().then((value) => {
         setAllBookmarks(value.bookmarks);
         bmCtx.onBookmarksRetrieved(value.bookmarks);
       });
+    } else if (!shouldRetrieveBookmarks) {
+      setAllBookmarks(bmCtx.bookmarks);
     }
-  }, [user_id]);
+  }, [user_id, shouldRetrieveBookmarks]);
 
   useEffect(() => {
-    const allTags = uniq(
-      allBookmarks.flatMap((bm) => {
-        const lowercaseTags: string[] = [];
-        bm.tags.forEach((t) => lowercaseTags.push(t.toLowerCase()));
-        return lowercaseTags;
-      })
-    ).sort();
-
-    bmCtx.onSetAllTags(allTags);
-    handleFilterChange(tagsToFilterBy);
+    if (allBookmarks && allBookmarks.length > 0) {
+      handleFilterChange(currentTags);
+    }
   }, [allBookmarks]);
 
   const handleFilterChange = (tags: string[]) => {
@@ -76,23 +76,31 @@ const BookmarkContainer = () => {
 
   return (
     <>
-      <FilterByTags
-        onTagsChanged={handleFilterChange}
-        allTags={bmCtx.allTags}
-      />
-      <div className="text-center grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
-        {bookmarksToShow?.length > 0 ? (
-          bookmarksToShow.map((bm) => <Bookmark {...bm} key={bm.id} />)
-        ) : (
-          <h1 className="text-xl font-bold">
-            {isLoading ? (
-              <p>Loading Bookmarks...</p>
-            ) : (
-              <p>No bookmarks to show.</p>
-            )}
-          </h1>
-        )}
+      <div className="text-center grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
+        <div>
+          <FilterByTags onTagsChanged={handleFilterChange} />
+        </div>
+        <div>
+          <ToastContainer
+            autoClose={false}
+            position="top-center"
+            closeButton={false}
+            closeOnClick={false}
+          />
+        </div>
       </div>
+
+      {bookmarksToShow?.length > 0 ? (
+        <div className="text-center grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
+          {bookmarksToShow.map((bm) => (
+            <Bookmark {...bm} key={bm.id} />
+          ))}
+        </div>
+      ) : (
+        <h1 className="text-xl font-bold text-center">
+          {!isLoading && <p>No bookmarks to show.</p>}
+        </h1>
+      )}
     </>
   );
 };
