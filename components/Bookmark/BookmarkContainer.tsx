@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import ky from "ky";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 
 import FilterByTags from "../Filter/FilterByTags";
 import Bookmark from "./Bookmark";
@@ -79,14 +78,6 @@ const BookmarkContainer = () => {
       <div className="text-center grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
         <div>
           <FilterByTags onTagsChanged={handleFilterChange} />
-        </div>
-        <div>
-          <ToastContainer
-            autoClose={false}
-            position="top-center"
-            closeButton={false}
-            closeOnClick={false}
-          />
         </div>
       </div>
 
