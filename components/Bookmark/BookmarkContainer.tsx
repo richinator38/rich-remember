@@ -8,6 +8,8 @@ import { BookmarkModel } from "@/models/Bookmark";
 import BookmarksContext from "@/store/bookmarks-context";
 import { useUserFromStorage } from "@/hooks/useUserFromStorage";
 import { useFilterTagsFromStorage } from "@/hooks/useFilterTagsFromStorage";
+import FilterByText from "../Filter/FilterByText";
+import { useFilterTextFromStorage } from "@/hooks/useFilterTextFromStorage";
 
 const BookmarkContainer = () => {
   const [allBookmarks, setAllBookmarks] = useState<BookmarkModel[]>([]);
@@ -16,6 +18,7 @@ const BookmarkContainer = () => {
   const bmCtx = useContext(BookmarksContext);
   const { id: user_id } = useUserFromStorage();
   const { filter: currentTags } = useFilterTagsFromStorage();
+  const currentTextFilter = useFilterTextFromStorage();
   const { shouldRetrieveBookmarks } = bmCtx;
 
   useEffect(() => {
@@ -25,7 +28,7 @@ const BookmarkContainer = () => {
       const bookmarksFromDbResponse = await ky.get(
         `/api/bookmarks?user_id=${user_id || ""}`,
         {
-          timeout: 20000,
+          timeout: 40000,
           throwHttpErrors: false,
         }
       );
@@ -51,13 +54,22 @@ const BookmarkContainer = () => {
   }, [user_id, shouldRetrieveBookmarks]);
 
   useEffect(() => {
+    console.log('allBookmarks', allBookmarks);
     if (allBookmarks && allBookmarks.length > 0) {
-      handleFilterChange(currentTags);
+      doFilter(currentTags, currentTextFilter);
     }
   }, [allBookmarks]);
 
   const handleFilterChange = (tags: string[]) => {
-    const newFilteredBookmarks = allBookmarks.filter((bm) => {
+    doFilter(tags, currentTextFilter);
+  };
+
+  const handleTextChange = (text: string) => {
+    doFilter(currentTags, text);
+  };
+
+  const doFilter = (tags: string[], text: string) => {
+    let newFilteredBookmarks = allBookmarks.filter((bm) => {
       if (tags?.length > 0) {
         return (
           bm.tags?.findIndex(
@@ -70,6 +82,12 @@ const BookmarkContainer = () => {
       return true;
     });
 
+    if (text?.length > 0) {
+      newFilteredBookmarks = newFilteredBookmarks.filter((bm) => {
+        return bm.link.toLowerCase().includes(text.toLowerCase()) || bm.text.toLowerCase().includes(text.toLowerCase());
+      });
+    }
+
     setBookmarksToShow(newFilteredBookmarks);
   };
 
@@ -78,6 +96,9 @@ const BookmarkContainer = () => {
       <div className="text-center grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
         <div>
           <FilterByTags onTagsChanged={handleFilterChange} />
+        </div>
+        <div>
+          <FilterByText onTextChanged={handleTextChange} />
         </div>
       </div>
 
